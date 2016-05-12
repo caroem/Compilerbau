@@ -1,0 +1,8 @@
+main.o: main.c  \
+   l_scan.h \
+  
+l_scan.o: l_scan.c l_scan.h  \
+   l_scanSource.h \
+  
+l_scanSource.o: l_scanSource.c l_scanSource.h \
+  

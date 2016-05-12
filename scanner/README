@@ -1,0 +1,24 @@
+###############################################################################
+# Project:  COCKTAIL training
+# Descr:    A simple scanner generated with rex
+# Kind:     README
+# Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+# $Id: README,v 1.3 2007/06/03 16:55:33 vollmer Exp $
+###############################################################################
+
+This directory describes the implementation of a simple scanner generated
+with REX and various tokens.
+
+The files:
+	l.rex               REX scanner specifictation (stub)
+	main.c              C-main program (stub)
+	scan	            The executable to be produced
+	Makefile
+	README
+	test*               Some test sources
+
+	main-solution.c
+	l-solution.rex
+
+Exercice:
+  - complete the implementation of the scanner specification l.rex.

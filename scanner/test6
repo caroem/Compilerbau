@@ -1,0 +1,12 @@
+int a
+int b
+begin fak
+if a = 1 then
+m = 1
+else
+m = n*fak(n-1)
+end
+a * a
+b + c
+c - a
+a / d

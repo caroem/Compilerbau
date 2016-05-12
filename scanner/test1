@@ -1,0 +1,18 @@
+these are identifiers
+12345
+abc123
+abc 123
+123.456 123.123e+45
+"abc"
+"string with a \"-character"
+
+-- test
+
+1234
+
+PROCEDURE
+BEGIN
+END
+IF
+THEN
+WHILE
