@@ -1,2 +1,2 @@
 # Compilerbau
-Compilerbau dhbwka
+Compilerbau dhbw
