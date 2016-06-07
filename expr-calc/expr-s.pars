@@ -1,0 +1,131 @@
+/* Project:  COCKTAIL training
+ * Descr:    A simple pocket computer (scanner, parser, evaluator)
+ * Kind:     Parser specification (solution)
+ * Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+ * $Id: expr.pars.in,v 1.7 2010/04/26 10:53:44 vollmer Exp $
+ */
+
+// Exercises:
+//  - Add computation of the "Value" Attribute to all grammar rules.
+//  - Test division by 0!
+//  - Add grammar and evaluation rules to compute "sin()", "cos()", and "tan()"
+//    see     man (3) sin
+//    Add a grammar and evaluation rule for the constant    "pi"
+//  - Add more test sources to test your grammar
+
+SCANNER expr_scan
+
+PARSER  expr_pars
+
+GLOBAL {
+ # include <stdio.h>
+ # include <math.h>
+}
+
+PREC LEFT  '?'
+     LEFT  '|'
+     LEFT  '&'
+     LEFT  '!'
+     NONE  '<' '>' '='
+     LEFT  '+' '-'
+     LEFT  '*' '/'
+     RIGHT '^'
+     LEFT UNARY
+
+RULE
+root 	= expr_l.
+
+expr_l	= <
+	= /* epsilon */
+	.
+ exprs  = <
+	= expr
+	  {=> printf (" ==> %6.2f\n", expr:Value); }
+	.
+	= exprs ',' expr
+	  {=> printf (" ==> %6.2f\n", expr:Value); }
+	.
+ > . /* exprs */
+> . /* expr_l */
+
+expr = <
+	= int_const
+	  {Value := int_const:Value;}
+	.
+	= float_const
+	.
+	= '(' expr ')'
+	.
+	= l:expr '+' r:expr
+	  {Value    := l:Value + r:Value; }
+	.
+	= l:expr '*' r:expr
+	  {Value    := l:Value * r:Value; }
+	.
+	= l:expr '-'r:expr
+	  {Value    := l:Value - r:Value; }
+	.
+	= l:expr '/' r:expr
+	  {Value := {if (r:Value == 0.0) {
+		       Message ("Division by 0", xxError, '/':Position);
+		       Value = 0.0;
+	             } else {
+		       Value = l:Value / r:Value;
+	             }
+	            };
+	  }
+	.
+	= l:expr '^' r:expr  // exponentation l ^ r
+			     // see    man (3) pow    to compute the value
+	  {Value    := pow (l:Value, r:Value); }
+	.
+	= c:expr '?' t:expr ':' e:expr
+	  {Value    := (c:Value) ? t:Value \: e:Value; }
+	.
+	= '+' expr   PREC UNARY
+	.
+	= '-' expr   PREC UNARY
+	  {Value    := -expr:Value; }
+	.
+	= l:expr '>' r:expr
+	  {Value    := l:Value > r:Value; }
+	.
+	= l:expr '<' r:expr
+	  {Value    := l:Value < r:Value; }
+	.
+	= l:expr '=' r:expr
+	  {Value    := l:Value == r:Value; }
+	.
+	= l:expr '&' r:expr
+	  {Value    := l:Value && r:Value; }
+	.
+	= l:expr '|' r:expr
+	  {Value    := l:Value || r:Value; }
+	.
+	= '!' expr  PREC UNARY
+	  {Value    := !expr:Value; }
+	.
+	= pi
+	  {Value := 3.14159265;}
+	.
+	= sin '(' e:expr ')'
+	  {Value := sin (e:Value);}
+	.
+	= cos '(' e:expr ')'
+	  {Value := cos (e:Value);}
+	.
+	= tan '(' e:expr ')'
+	  {Value := tan (e:Value);}
+	.
+> . /* expr */
+
+/* Tokens */
+int_const:    [Value: long]   {Value := 0;  } .
+float_const:  [Value: double] {Value := 0.0;} .
+
+/* non-terminal attributes */
+MODULE attributes
+PROPERTY SYN
+DECLARE
+ expr	= [Value: double] .
+END attributes

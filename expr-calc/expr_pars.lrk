@@ -1,0 +1,181 @@
+SCANNER expr_scan PARSER expr_pars
+IMPORT {
+}
+
+EXPORT {
+}
+
+GLOBAL {
+
+#@ line 20 "expr.pars"
+
+ # include <stdio.h>
+ # include <math.h>
+
+
+#@ line 17 "expr_pars.lrk"
+# ifdef CommonParsAttrs
+typedef struct { CommonParsAttrs } yytCommonParsAttrs;
+#  define yyCommon yytCommonParsAttrs Common;
+#  define yyCommonParsAttrs CommonParsAttrs
+# else
+#  define yyCommon
+#  define yyCommonParsAttrs
+# endif
+
+typedef struct { yyCommonParsAttrs double Value; } zz_expr;
+
+typedef union {
+expr_scan_tScanAttribute Scan;
+yyCommon
+zz_expr expr;
+} tParsAttribute;
+}
+
+LOCAL {
+}
+
+BEGIN {
+}
+
+CLOSE {
+}
+
+TOKEN
+
+int_const = 1
+float_const = 2
+'(' = 3
+')' = 4
+'+' = 5
+'*' = 6
+'-' = 7
+'/' = 8
+'^' = 9
+'?' = 10
+':' = 11
+'>' = 12
+'<' = 13
+'=' = 14
+'&' = 15
+'|' = 16
+'!' = 17
+pi = 18
+sin = 19
+cos = 20
+tan = 21
+',' = 22
+
+OPER
+
+LEFT  '?'
+LEFT  '|'
+LEFT  '&'
+LEFT  '!'
+NONE  '<' '>' '='
+LEFT  '+' '-'
+LEFT  '*' '/'
+RIGHT '^'
+LEFT  UNARY
+
+RULE
+
+root : expr_l .
+
+#@ line 39 "expr.pars"
+expr_l : .
+
+
+expr_l : expr {
+{  printf (" ==> %6.2f\n", $1.expr.Value); } } .
+
+expr_l : exprs ',' expr {
+{  printf (" ==> %6.2f\n", $3.expr.Value); } } .
+
+#@ line 42 "expr.pars"
+exprs : expr {
+{  printf (" ==> %6.2f\n", $1.expr.Value); } } .
+
+exprs : exprs ',' expr {
+{  printf (" ==> %6.2f\n", $3.expr.Value); } } .
+
+#@ line 52 "expr.pars"
+expr : int_const {
+$$.expr.Value  =  $1.Scan.int_const.Value;} .
+
+expr : float_const {
+#@ line 108 "expr_pars.lrk"
+$$.expr.Value = $1.Scan.float_const.Value;
+} .
+
+#@ line 57 "expr.pars"
+expr : '(' expr ')' {
+#@ line 114 "expr_pars.lrk"
+$$.expr.Value = $2.expr.Value;
+} .
+
+#@ line 59 "expr.pars"
+expr : expr '+' expr {
+$$.expr.Value    = $1.expr.Value + $3.expr.Value; } .
+
+expr : expr '*' expr {
+$$.expr.Value    = $1.expr.Value * $3.expr.Value; } .
+
+expr : expr '-' expr {
+$$.expr.Value    = $1.expr.Value - $3.expr.Value; } .
+
+expr : expr '/' expr {
+ if ($3.expr.Value == 0.0) {
+		       Message ("Division by 0", xxError, $2.Scan.Position);
+		       $$.expr.Value = 0.0;
+	             } else {
+		       $$.expr.Value = $1.expr.Value / $3.expr.Value;
+	             }
+	            ;
+	  } .
+
+expr : expr '^' expr {
+#@ line 80 "expr.pars"
+$$.expr.Value    = pow ($1.expr.Value, $3.expr.Value); } .
+
+expr : expr '?' expr ':' expr {
+$$.expr.Value    = ($1.expr.Value) ? $3.expr.Value : $5.expr.Value; } .
+
+expr : '+' expr PREC UNARY {
+#@ line 146 "expr_pars.lrk"
+$$.expr.Value = $2.expr.Value;
+} .
+
+#@ line 87 "expr.pars"
+expr : '-' expr PREC UNARY {
+$$.expr.Value    = -$2.expr.Value; } .
+
+expr : expr '>' expr {
+$$.expr.Value    = $1.expr.Value > $3.expr.Value; } .
+
+expr : expr '<' expr {
+$$.expr.Value    = $1.expr.Value < $3.expr.Value; } .
+
+expr : expr '=' expr {
+$$.expr.Value    = $1.expr.Value == $3.expr.Value; } .
+
+expr : expr '&' expr {
+$$.expr.Value    = $1.expr.Value && $3.expr.Value; } .
+
+expr : expr '|' expr {
+$$.expr.Value    = $1.expr.Value || $3.expr.Value; } .
+
+expr : '!' expr PREC UNARY {
+$$.expr.Value    = !$2.expr.Value; } .
+
+expr : pi {
+$$.expr.Value = 3.14159265;} .
+
+expr : sin '(' expr ')' {
+$$.expr.Value = sin ($3.expr.Value);} .
+
+expr : cos '(' expr ')' {
+$$.expr.Value = cos ($3.expr.Value);} .
+
+expr : tan '(' expr ')' {
+$$.expr.Value = tan ($3.expr.Value);} .

@@ -1,0 +1,29 @@
+###############################################################################
+# Project:  COCKTAIL training
+# Descr:    LR parser for an expression language
+# Kind:     README
+# Author:   Prof. Dr. Juergen Vollmer <vollmer@dhbw-karlsruhe.de>
+# $Id: README,v 1.8 2010/04/26 10:41:57 vollmer Exp $
+###############################################################################
+
+This directory describes the implementation of an LR parser for
+arithmetic expressions and evaluation during parsing.
+
+The files:
+	expr.pars	The parser specification (stub)
+	expr.scan	The scanner specification
+	main.c          C-main program
+	test*           Some test sources
+	expr-calc	the executable to be produced
+	Makefile
+	README
+
+	expr-solution.pars
+
+Exercises:
+  - Add computation of the "Value" Attribute to all grammar rules.
+  - Test division by 0!
+  - Add grammar and evaluation rules to compute "sin()", "cos()", and "tan()"
+    see     man (3) sin
+    Add a grammar and evaluation rule for the constant    "pi"
+  - Add more test sources to test your grammar
