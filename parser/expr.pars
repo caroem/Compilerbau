@@ -74,7 +74,7 @@ statement = <
 varallocation = <
 	 = name '='expr ';'
 	 .
-	 = name '=' exprstring
+	 = name '=' exprstring ';'
 	 .
 >.
 
@@ -86,7 +86,7 @@ ifstmt = <
 >.
 
 whilestmt = <
-	  = 'while' '(' expr ')' body
+	  = 'while' condition body
 	  .
   >.
 
@@ -122,6 +122,8 @@ expr = <
     .
     = float_const
     .
+    = string_const
+    .
     = identifier
     .
  > .
@@ -138,7 +140,6 @@ expr = <
 
 
 /* Tokens */
-key: [Value: tIdent] {Value := NoIdent;} .
 int_const:    [Value: long]   {Value := 0;  } .
 float_const:  [Value: double] {Value := 0.0;} .
 string_const: [Value: tIdent] {Value := NoIdent;} .
