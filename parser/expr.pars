@@ -21,17 +21,17 @@ RULE
 root 	= x.
 
 x	= < 
-	= '#' name var exec
+	= '#' name ';' var exec
 	.
 > .
 
 name	= < 
-	=  identifier ';'
+	=  identifier
 	.
 > .
 
 var	= <
-	= typdef name
+	= typdef name ';'
 	.
 	= var var
 	.
@@ -44,18 +44,62 @@ typdef 	= <
 	.
 	= 'String'
 	.
-	= int_const
-	.
-	= float_const
-	.
-	= string_const
-	.
 > .
 
 exec	= <
+	= 'BEGIN' body 'END' ';'
+	.
 	=
 	.
 >.
+
+body 	= <
+	= varallocation
+	.
+	= statement
+	.
+	= body body
+	.
+>.
+
+statement = <
+	  = ifstmt
+	  .
+	  = whilestmt
+	  .
+	  = forstmt
+	  .
+>.
+
+varallocation = <
+	 = name '='expr ';'
+	 .
+	 = name '=' exprstring
+	 .
+>.
+
+ifstmt = <
+	  = 'if' condition 'then' body
+	  .
+	  = 'if' condition 'then' body 'else' body
+	  .
+>.
+
+whilestmt = <
+	  = 'while' '(' expr ')' body
+	  .
+  >.
+
+forstmt = <
+	  = 'for' '(' int_const ')'body
+	  .
+>.
+
+condition = <
+	  = '(' expr ')'
+	  .
+>.
+	  
 
 expr = <
     = l:expr '+' r:expr
@@ -81,6 +125,16 @@ expr = <
     = identifier
     .
  > .
+ 
+ exprstring = <
+    = identfier
+    .
+    = string_const
+    .
+    = exprstring '+' exprstring
+    .
+    
+ >.
 
 
 /* Tokens */

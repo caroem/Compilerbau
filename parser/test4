@@ -2,7 +2,6 @@
 float test1;
 BEGIN
 while(a == b)
-  if(a < b) then
+  for(1234)
     a = a+b;
-  test1 = test1+12;
 END;

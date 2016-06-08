@@ -32,6 +32,10 @@ all: $(MAIN)
 test:
 	./$(MAIN) test1; echo
 	./$(MAIN) test2; echo
+	./$(MAIN) test3; echo
+	./$(MAIN) test4; echo
+	./$(MAIN) test5; echo
+	./$(MAIN) test6; echo
 
 ###############################################################################
 
