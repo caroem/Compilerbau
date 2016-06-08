@@ -1,0 +1,77 @@
+/* Project:  COCKTAIL training
+ * Descr:    LR parser for an expression language
+ * Kind:     Parser specification (solution)
+ * Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+ * $Id: expr-solution.pars,v 1.2 2007/06/01 11:43:20 vollmer Exp $
+ */
+
+SCANNER expr_scan
+
+PARSER  expr_pars
+
+GLOBAL {
+ # include <stdio.h>
+}
+
+PREC LEFT  '+' '-'
+     LEFT  '*' '/'
+     RIGHT '**'
+     LEFT UNARY
+
+RULE
+root 	= x.
+
+x	< 
+	= 'X:' name ';' var exec
+	.
+> .
+
+name	< 
+	=  string_const
+	.
+> .
+
+var	<
+	= typdef name ';'
+	.
+> .
+
+typdef 	<
+	= 'int'
+	= 'float'
+	= 'String'
+	.
+> .
+
+exec	<
+	=
+	.
+>.
+
+expr = <
+	= int_const
+	.
+	= float_const
+	.
+	= '(' expr ')'
+	.
+	= expr '+' expr
+	.
+	= expr '-' expr
+	.
+	= expr '*' expr
+	.
+	= expr '/' expr
+	.
+	= expr '**' expr
+	.
+	= '+' expr   PREC UNARY
+	.
+	= '-' expr   PREC UNARY
+	.
+> . /* expr */
+
+/* Tokens */
+int_const:    [Value: long]   {Value := 0;  } .
+float_const:  [Value: double] {Value := 0.0;} .
+string_const: [Value: string] {Value := "";} .

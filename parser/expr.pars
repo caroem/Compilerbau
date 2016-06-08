@@ -1,0 +1,91 @@
+/* Project:  COCKTAIL training
+ * Descr:    LR parser for an expression language
+ * Kind:     Parser specification (solution)
+ * Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+ * $Id: expr-solution.pars,v 1.2 2007/06/01 11:43:20 vollmer Exp $
+ */
+
+SCANNER expr_scan
+
+PARSER  expr_pars
+
+GLOBAL {
+ # include <stdio.h>
+}
+
+
+PREC LEFT  '+' '-'
+     LEFT  '*' '/'
+
+RULE
+root 	= x.
+
+x	= < 
+	= '#' name var exec
+	.
+> .
+
+name	= < 
+	=  identifier ';'
+	.
+> .
+
+var	= <
+	= typdef name
+	.
+	= var var
+	.
+> .
+
+typdef 	= <
+	= 'int'
+	.
+	= 'float'
+	.
+	= 'String'
+	.
+	= int_const
+	.
+	= float_const
+	.
+	= string_const
+	.
+> .
+
+exec	= <
+	=
+	.
+>.
+
+expr = <
+    = l:expr '+' r:expr
+    .
+    = l:expr '-' r:expr
+    .
+    = l:expr '*' r:expr
+    .
+    = l:expr '/' r:expr
+    .
+    = l:expr '<' r:expr
+    .
+    = l:expr '>' r:expr
+    .
+    = l:expr '==' r:expr
+    .
+    = '(' expr ')'
+    .
+    = int_const
+    .
+    = float_const
+    .
+    = identifier
+    .
+ > .
+
+
+/* Tokens */
+key: [Value: tIdent] {Value := NoIdent;} .
+int_const:    [Value: long]   {Value := 0;  } .
+float_const:  [Value: double] {Value := 0.0;} .
+string_const: [Value: tIdent] {Value := NoIdent;} .
+identifier:   [Ident: tIdent] {Ident := NoIdent; } .

@@ -1,0 +1,35 @@
+###############################################################################
+# Project:  COCKTAIL training
+# Descr:    LR parser for an expression language
+# Kind:     README
+# Author:   Dr. Juergen Vollmer <Juergen.Vollmer@informatik-vollmer.de>
+# $Id: README,v 1.3 2007/06/03 16:52:55 vollmer Exp $
+###############################################################################
+
+This directory describes the implementation of an LR parser for
+arithmetic expressions.
+
+The files:
+	expr.pars	The parser specification (stub)
+	expr.scan	The scanner specification
+	main.c          C-main program
+	lr-parser	The executable to be produced
+	test*           Some test sources
+	Makefile
+	README
+
+	expr-solution.pars
+
+Exercises:
+Extend the file expr.pars (and expr.scan):
+  - Add other arithmetic (binary - / **, unary + and -) operations.
+    Think about accosiactivity and operator preceedence.
+  - Add identifiers as part of an expression to your grammer
+    extend the scanner.
+  - Add comma separated list of expressions. The list may be empty.
+   'expr_l' (expression list) should be the new grammar root symbol.
+  - Rewrite your grammar, so that precedences are used
+  - Add C-style statements (e.g. assignment, if, while and statement lists)
+    to your grammar. 'stmt' should be the new root symbol of your grammar
+  - Add those statements using Modula-style syntax.
+  - Add more test sources to test your grammar
