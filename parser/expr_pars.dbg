@@ -1,85 +1,4 @@
-State    9 (  14): derivation trees
------------------------------------
-
-	shift reduce conflict implicitly repaired
-
-.root _EOF_ 
-.x 
- '#' name ';'.var exec 
-.var var 
-|  var.var 
-| .typdef name ';' 
-| .'int' 
- var var.
-
-reduce   36  var:  var var. {'int'} ?
-
-example   r  # identifier ; String identifier ; String identifier ; .int identifier ; 
-
- ...
- '#' name ';'.var exec 
-.typdef name ';' 
-.'int' 
-
-shift    41  typdef: .'int' ?
-
-example   s  # identifier ; .int identifier ; 
-
- ...
- '#' name ';'.var exec 
-.var var 
-|  var.var 
-| .typdef name ';' 
-| .'float' 
- var var.
-
-reduce   36  var:  var var. {'float'} ?
-
-example   r  # identifier ; String identifier ; String identifier ; .float identifier ; 
-
- ...
- '#' name ';'.var exec 
-.typdef name ';' 
-.'float' 
-
-shift    43  typdef: .'float' ?
-
-example   s  # identifier ; .float identifier ; 
-
- ...
- '#' name ';'.var exec 
-.var var 
-|  var.var 
-| .typdef name ';' 
-| .'String' 
- var var.
-
-reduce   36  var:  var var. {'String'} ?
-
-example   r  # identifier ; String identifier ; String identifier ; .String identifier ; 
-
- ...
- '#' name ';'.var exec 
-.typdef name ';' 
-.'String' 
-
-shift    45  typdef: .'String' ?
-
-example   s  # identifier ; .String identifier ; 
-
-State    9 (  14): summary
---------------------------
-
-ignore reduce   36  var:  var var. {'int'}
-retain shift    41  typdef: .'int' 
-
-ignore reduce   36  var:  var var. {'float'}
-retain shift    43  typdef: .'float' 
-
-ignore reduce   36  var:  var var. {'String'}
-retain shift    45  typdef: .'String' 
-
-State   22 (  34): derivation trees
+State   15 (  21): derivation trees
 -----------------------------------
 
 	shift reduce conflict implicitly repaired
@@ -88,16 +7,18 @@ State   22 (  34): derivation trees
 .x 
  '#' name ';' var.exec 
  'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
+.statement body 
+|  statement.body 
 | .varallocation 
-| .name '=' exprstring 
+| .name '=' expr ';' 
 | .identifier 
- body body.
+.whilestmt 
+ 'while' condition.body 
+ statement.
 
-reduce   61  body:  body body. {identifier} ?
+reduce   59  body:  statement. {identifier} ?
 
-example   r  # identifier ; String identifier ; BEGIN identifier = string_const identifier = string_const .identifier = string_const END ; 
+example   r  # identifier ; String identifier ; BEGIN while ( identifier ) for ( int_const ) identifier = identifier ; .identifier = identifier ; END ; 
 
 .root _EOF_ 
 .x 
@@ -112,16 +33,18 @@ example   s  # .identifier ; String identifier ;
 .x 
  '#' name ';' var.exec 
  'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
+.statement body 
+|  statement.body 
 | .statement 
 | .ifstmt 
 | .'if' condition 'then' body 
- body body.
+.whilestmt 
+ 'while' condition.body 
+ statement.
 
-reduce   61  body:  body body. {'if'} ?
+reduce   59  body:  statement. {'if'} ?
 
-example   r  # identifier ; String identifier ; BEGIN identifier = string_const identifier = string_const .if ( identifier ) then identifier = string_const END ; 
+example   r  # identifier ; String identifier ; BEGIN while ( identifier ) for ( int_const ) identifier = identifier ; .if ( identifier ) then identifier = identifier ; END ; 
 
  ...
  'BEGIN'.body 'END' ';' 
@@ -131,7 +54,7 @@ example   r  # identifier ; String identifier ; BEGIN identifier = string_const 
 
 shift    82  ifstmt: .'if' condition 'then' body ?
 
-example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = string_const END ; 
+example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = identifier ; END ; 
 
  ...
 .ifstmt 
@@ -139,43 +62,47 @@ example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then id
 
 shift    84  ifstmt: .'if' condition 'then' body 'else' body ?
 
-example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = string_const else identifier = string_const END ; 
+example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = identifier ; else identifier = identifier ; END ; 
 
  ...
  'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
+.statement body 
+|  statement.body 
 | .statement 
 | .whilestmt 
-| .'while' '(' expr ')' body 
- body body.
+| .'while' condition body 
+.whilestmt 
+ 'while' condition.body 
+ statement.
 
-reduce   61  body:  body body. {'while'} ?
+reduce   59  body:  statement. {'while'} ?
 
-example   r  # identifier ; String identifier ; BEGIN identifier = string_const identifier = string_const .while ( identifier ) identifier = string_const END ; 
+example   r  # identifier ; String identifier ; BEGIN while ( identifier ) for ( int_const ) identifier = identifier ; .while ( identifier ) identifier = identifier ; END ; 
 
  ...
  'BEGIN'.body 'END' ';' 
 .statement 
 .whilestmt 
-.'while' '(' expr ')' body 
+.'while' condition body 
 
-shift    89  whilestmt: .'while' '(' expr ')' body ?
+shift    89  whilestmt: .'while' condition body ?
 
-example   s  # identifier ; String identifier ; BEGIN .while ( identifier ) identifier = string_const END ; 
+example   s  # identifier ; String identifier ; BEGIN .while ( identifier ) identifier = identifier ; END ; 
 
  ...
  'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
+.statement body 
+|  statement.body 
 | .statement 
 | .forstmt 
 | .'for' '(' int_const ')' body 
- body body.
+.whilestmt 
+ 'while' condition.body 
+ statement.
 
-reduce   61  body:  body body. {'for'} ?
+reduce   59  body:  statement. {'for'} ?
 
-example   r  # identifier ; String identifier ; BEGIN identifier = string_const identifier = string_const .for ( int_const ) identifier = string_const END ; 
+example   r  # identifier ; String identifier ; BEGIN while ( identifier ) for ( int_const ) identifier = identifier ; .for ( int_const ) identifier = identifier ; END ; 
 
  ...
  'BEGIN'.body 'END' ';' 
@@ -185,25 +112,25 @@ example   r  # identifier ; String identifier ; BEGIN identifier = string_const 
 
 shift    94  forstmt: .'for' '(' int_const ')' body ?
 
-example   s  # identifier ; String identifier ; BEGIN .for ( int_const ) identifier = string_const END ; 
+example   s  # identifier ; String identifier ; BEGIN .for ( int_const ) identifier = identifier ; END ; 
 
-State   22 (  34): summary
+State   15 (  21): summary
 --------------------------
 
-ignore reduce   61  body:  body body. {identifier}
+ignore reduce   59  body:  statement. {identifier}
 retain shift    29  name: .identifier 
 
-ignore reduce   61  body:  body body. {'if'}
+ignore reduce   59  body:  statement. {'if'}
 retain shift    82  ifstmt: .'if' condition 'then' body 
 retain shift    84  ifstmt: .'if' condition 'then' body 'else' body 
 
-ignore reduce   61  body:  body body. {'while'}
-retain shift    89  whilestmt: .'while' '(' expr ')' body 
+ignore reduce   59  body:  statement. {'while'}
+retain shift    89  whilestmt: .'while' condition body 
 
-ignore reduce   61  body:  body body. {'for'}
+ignore reduce   59  body:  statement. {'for'}
 retain shift    94  forstmt: .'for' '(' int_const ')' body 
 
-State   38 (  57): derivation trees
+State   16 (  22): derivation trees
 -----------------------------------
 
 	shift reduce conflict implicitly repaired
@@ -212,18 +139,18 @@ State   38 (  57): derivation trees
 .x 
  '#' name ';' var.exec 
  'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
+.statement body 
+|  statement.body 
 | .varallocation 
-| .name '=' exprstring 
+| .name '=' expr ';' 
 | .identifier 
-.statement 
-.ifstmt 
- 'if' condition 'then' body.
+.whilestmt 
+ 'while' condition.body 
+ varallocation.
 
-reduce   82  ifstmt:  'if' condition 'then' body. {identifier} ?
+reduce   57  body:  varallocation. {identifier} ?
 
-example   r  # identifier ; String identifier ; BEGIN if ( identifier ) then identifier = string_const .identifier = string_const END ; 
+example   r  # identifier ; String identifier ; BEGIN while ( identifier ) identifier = identifier ; .identifier = identifier ; END ; 
 
 .root _EOF_ 
 .x 
@@ -238,18 +165,18 @@ example   s  # .identifier ; String identifier ;
 .x 
  '#' name ';' var.exec 
  'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
+.statement body 
+|  statement.body 
 | .statement 
 | .ifstmt 
 | .'if' condition 'then' body 
-.statement 
-.ifstmt 
- 'if' condition 'then' body.
+.whilestmt 
+ 'while' condition.body 
+ varallocation.
 
-reduce   82  ifstmt:  'if' condition 'then' body. {'if'} ?
+reduce   57  body:  varallocation. {'if'} ?
 
-example   r  # identifier ; String identifier ; BEGIN if ( identifier ) then identifier = string_const .if ( identifier ) then identifier = string_const END ; 
+example   r  # identifier ; String identifier ; BEGIN while ( identifier ) identifier = identifier ; .if ( identifier ) then identifier = identifier ; END ; 
 
  ...
  'BEGIN'.body 'END' ';' 
@@ -259,7 +186,7 @@ example   r  # identifier ; String identifier ; BEGIN if ( identifier ) then ide
 
 shift    82  ifstmt: .'if' condition 'then' body ?
 
-example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = string_const END ; 
+example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = identifier ; END ; 
 
  ...
 .ifstmt 
@@ -267,9 +194,118 @@ example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then id
 
 shift    84  ifstmt: .'if' condition 'then' body 'else' body ?
 
-example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = string_const else identifier = string_const END ; 
+example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = identifier ; else identifier = identifier ; END ; 
 
  ...
+ 'BEGIN'.body 'END' ';' 
+.statement body 
+|  statement.body 
+| .statement 
+| .whilestmt 
+| .'while' condition body 
+.whilestmt 
+ 'while' condition.body 
+ varallocation.
+
+reduce   57  body:  varallocation. {'while'} ?
+
+example   r  # identifier ; String identifier ; BEGIN while ( identifier ) identifier = identifier ; .while ( identifier ) identifier = identifier ; END ; 
+
+ ...
+ 'BEGIN'.body 'END' ';' 
+.statement 
+.whilestmt 
+.'while' condition body 
+
+shift    89  whilestmt: .'while' condition body ?
+
+example   s  # identifier ; String identifier ; BEGIN .while ( identifier ) identifier = identifier ; END ; 
+
+ ...
+ 'BEGIN'.body 'END' ';' 
+.statement body 
+|  statement.body 
+| .statement 
+| .forstmt 
+| .'for' '(' int_const ')' body 
+.whilestmt 
+ 'while' condition.body 
+ varallocation.
+
+reduce   57  body:  varallocation. {'for'} ?
+
+example   r  # identifier ; String identifier ; BEGIN while ( identifier ) identifier = identifier ; .for ( int_const ) identifier = identifier ; END ; 
+
+ ...
+ 'BEGIN'.body 'END' ';' 
+.statement 
+.forstmt 
+.'for' '(' int_const ')' body 
+
+shift    94  forstmt: .'for' '(' int_const ')' body ?
+
+example   s  # identifier ; String identifier ; BEGIN .for ( int_const ) identifier = identifier ; END ; 
+
+State   16 (  22): summary
+--------------------------
+
+ignore reduce   57  body:  varallocation. {identifier}
+retain shift    29  name: .identifier 
+
+ignore reduce   57  body:  varallocation. {'if'}
+retain shift    82  ifstmt: .'if' condition 'then' body 
+retain shift    84  ifstmt: .'if' condition 'then' body 'else' body 
+
+ignore reduce   57  body:  varallocation. {'while'}
+retain shift    89  whilestmt: .'while' condition body 
+
+ignore reduce   57  body:  varallocation. {'for'}
+retain shift    94  forstmt: .'for' '(' int_const ')' body 
+
+State   26 (  43): derivation trees
+-----------------------------------
+
+	shift reduce conflict implicitly repaired
+
+.root _EOF_ 
+.x 
+ '#' name ';' var.exec 
+ 'BEGIN'.body 'END' ';' 
+.varallocation 
+ name '='.expr ';' 
+.expr '+' expr 
+|  expr.'+' expr 
+ exprstring.
+
+reduce  128  expr:  exprstring. {'+'} ?
+
+example   r  # identifier ; String identifier ; BEGIN identifier = string_const .+ identifier ; END ; 
+
+ ...
+ name '='.expr ';' 
+.exprstring 
+ exprstring.'+' exprstring 
+
+shift   137  exprstring:  exprstring.'+' exprstring ?
+
+example   s  # identifier ; String identifier ; BEGIN identifier = string_const .+ string_const ; END ; 
+
+State   26 (  43): summary
+--------------------------
+
+ignore reduce  128  expr:  exprstring. {'+'}
+retain shift   137  exprstring:  exprstring.'+' exprstring 
+
+State   39 (  59): derivation trees
+-----------------------------------
+
+	shift reduce conflict implicitly repaired
+
+.root _EOF_ 
+.x 
+ '#' name ';' var.exec 
+ 'BEGIN'.body 'END' ';' 
+.statement 
 .ifstmt 
  'if' condition 'then'.body 'else' body 
 |  'if' condition 'then' body.'else' body 
@@ -279,7 +315,7 @@ example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then id
 
 reduce   82  ifstmt:  'if' condition 'then' body. {'else'} ?
 
-example   r  # identifier ; String identifier ; BEGIN if ( identifier ) then if ( identifier ) then identifier = string_const .else identifier = string_const END ; 
+example   r  # identifier ; String identifier ; BEGIN if ( identifier ) then if ( identifier ) then identifier = identifier ; .else identifier = identifier ; END ; 
 
  ...
 .ifstmt 
@@ -287,78 +323,15 @@ example   r  # identifier ; String identifier ; BEGIN if ( identifier ) then if 
 
 shift    84  ifstmt:  'if' condition 'then' body.'else' body ?
 
-example   s  # identifier ; String identifier ; BEGIN if ( identifier ) then identifier = string_const .else identifier = string_const END ; 
+example   s  # identifier ; String identifier ; BEGIN if ( identifier ) then identifier = identifier ; .else identifier = identifier ; END ; 
 
- ...
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .statement 
-| .whilestmt 
-| .'while' '(' expr ')' body 
-.statement 
-.ifstmt 
- 'if' condition 'then' body.
-
-reduce   82  ifstmt:  'if' condition 'then' body. {'while'} ?
-
-example   r  # identifier ; String identifier ; BEGIN if ( identifier ) then identifier = string_const .while ( identifier ) identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.statement 
-.whilestmt 
-.'while' '(' expr ')' body 
-
-shift    89  whilestmt: .'while' '(' expr ')' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .while ( identifier ) identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .statement 
-| .forstmt 
-| .'for' '(' int_const ')' body 
-.statement 
-.ifstmt 
- 'if' condition 'then' body.
-
-reduce   82  ifstmt:  'if' condition 'then' body. {'for'} ?
-
-example   r  # identifier ; String identifier ; BEGIN if ( identifier ) then identifier = string_const .for ( int_const ) identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.statement 
-.forstmt 
-.'for' '(' int_const ')' body 
-
-shift    94  forstmt: .'for' '(' int_const ')' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .for ( int_const ) identifier = string_const END ; 
-
-State   38 (  57): summary
+State   39 (  59): summary
 --------------------------
-
-ignore reduce   82  ifstmt:  'if' condition 'then' body. {identifier}
-retain shift    29  name: .identifier 
-
-ignore reduce   82  ifstmt:  'if' condition 'then' body. {'if'}
-retain shift    82  ifstmt: .'if' condition 'then' body 
-retain shift    84  ifstmt: .'if' condition 'then' body 'else' body 
 
 ignore reduce   82  ifstmt:  'if' condition 'then' body. {'else'}
 retain shift    84  ifstmt:  'if' condition 'then' body.'else' body 
 
-ignore reduce   82  ifstmt:  'if' condition 'then' body. {'while'}
-retain shift    89  whilestmt: .'while' '(' expr ')' body 
-
-ignore reduce   82  ifstmt:  'if' condition 'then' body. {'for'}
-retain shift    94  forstmt: .'for' '(' int_const ')' body 
-
-State   42 (  63): derivation trees
+State   41 (  63): derivation trees
 -----------------------------------
 
 	shift reduce conflict implicitly repaired
@@ -421,7 +394,7 @@ shift   117  expr:  expr.'==' expr ?
 
 example   s  # identifier ; String identifier ; BEGIN identifier = identifier .== identifier ; END ; 
 
-State   42 (  63): summary
+State   41 (  63): summary
 --------------------------
 
 ignore reduce  105  expr:  expr '+' expr. {'<'}
@@ -433,7 +406,7 @@ retain shift   115  expr:  expr.'>' expr
 ignore reduce  105  expr:  expr '+' expr. {'=='}
 retain shift   117  expr:  expr.'==' expr 
 
-State   43 (  64): derivation trees
+State   42 (  64): derivation trees
 -----------------------------------
 
 	shift reduce conflict implicitly repaired
@@ -496,7 +469,7 @@ shift   117  expr:  expr.'==' expr ?
 
 example   s  # identifier ; String identifier ; BEGIN identifier = identifier .== identifier ; END ; 
 
-State   43 (  64): summary
+State   42 (  64): summary
 --------------------------
 
 ignore reduce  107  expr:  expr '-' expr. {'<'}
@@ -508,7 +481,7 @@ retain shift   115  expr:  expr.'>' expr
 ignore reduce  107  expr:  expr '-' expr. {'=='}
 retain shift   117  expr:  expr.'==' expr 
 
-State   44 (  65): derivation trees
+State   43 (  65): derivation trees
 -----------------------------------
 
 	shift reduce conflict implicitly repaired
@@ -571,7 +544,7 @@ shift   117  expr:  expr.'==' expr ?
 
 example   s  # identifier ; String identifier ; BEGIN identifier = identifier .== identifier ; END ; 
 
-State   44 (  65): summary
+State   43 (  65): summary
 --------------------------
 
 ignore reduce  109  expr:  expr '*' expr. {'<'}
@@ -583,7 +556,7 @@ retain shift   115  expr:  expr.'>' expr
 ignore reduce  109  expr:  expr '*' expr. {'=='}
 retain shift   117  expr:  expr.'==' expr 
 
-State   45 (  66): derivation trees
+State   44 (  66): derivation trees
 -----------------------------------
 
 	shift reduce conflict implicitly repaired
@@ -646,7 +619,7 @@ shift   117  expr:  expr.'==' expr ?
 
 example   s  # identifier ; String identifier ; BEGIN identifier = identifier .== identifier ; END ; 
 
-State   45 (  66): summary
+State   44 (  66): summary
 --------------------------
 
 ignore reduce  111  expr:  expr '/' expr. {'<'}
@@ -658,7 +631,7 @@ retain shift   115  expr:  expr.'>' expr
 ignore reduce  111  expr:  expr '/' expr. {'=='}
 retain shift   117  expr:  expr.'==' expr 
 
-State   46 (  67): derivation trees
+State   45 (  67): derivation trees
 -----------------------------------
 
 	shift reduce conflict implicitly repaired
@@ -793,7 +766,7 @@ shift   117  expr:  expr.'==' expr ?
 
 example   s  # identifier ; String identifier ; BEGIN identifier = identifier .== identifier ; END ; 
 
-State   46 (  67): summary
+State   45 (  67): summary
 --------------------------
 
 ignore reduce  113  expr:  expr '<' expr. {'+'}
@@ -817,7 +790,7 @@ retain shift   115  expr:  expr.'>' expr
 ignore reduce  113  expr:  expr '<' expr. {'=='}
 retain shift   117  expr:  expr.'==' expr 
 
-State   47 (  68): derivation trees
+State   46 (  68): derivation trees
 -----------------------------------
 
 	shift reduce conflict implicitly repaired
@@ -952,7 +925,7 @@ shift   117  expr:  expr.'==' expr ?
 
 example   s  # identifier ; String identifier ; BEGIN identifier = identifier .== identifier ; END ; 
 
-State   47 (  68): summary
+State   46 (  68): summary
 --------------------------
 
 ignore reduce  115  expr:  expr '>' expr. {'+'}
@@ -976,7 +949,7 @@ retain shift   115  expr:  expr.'>' expr
 ignore reduce  115  expr:  expr '>' expr. {'=='}
 retain shift   117  expr:  expr.'==' expr 
 
-State   48 (  69): derivation trees
+State   47 (  69): derivation trees
 -----------------------------------
 
 	shift reduce conflict implicitly repaired
@@ -1111,7 +1084,7 @@ shift   117  expr:  expr.'==' expr ?
 
 example   s  # identifier ; String identifier ; BEGIN identifier = identifier .== identifier ; END ; 
 
-State   48 (  69): summary
+State   47 (  69): summary
 --------------------------
 
 ignore reduce  117  expr:  expr '==' expr. {'+'}
@@ -1134,400 +1107,4 @@ retain shift   115  expr:  expr.'>' expr
 
 ignore reduce  117  expr:  expr '==' expr. {'=='}
 retain shift   117  expr:  expr.'==' expr 
-
-State   50 (  71): derivation trees
------------------------------------
-
-	shift reduce conflict implicitly repaired
-
-.root _EOF_ 
-.x 
- '#' name ';' var.exec 
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .varallocation 
-| .name '=' exprstring 
-| .identifier 
-.statement 
-.whilestmt 
- 'while' '(' expr ')' body.
-
-reduce   89  whilestmt:  'while' '(' expr ')' body. {identifier} ?
-
-example   r  # identifier ; String identifier ; BEGIN while ( identifier ) identifier = string_const .identifier = string_const END ; 
-
-.root _EOF_ 
-.x 
- '#'.name ';' var exec 
-.identifier 
-
-shift    29  name: .identifier ?
-
-example   s  # .identifier ; String identifier ; 
-
-.root _EOF_ 
-.x 
- '#' name ';' var.exec 
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .statement 
-| .ifstmt 
-| .'if' condition 'then' body 
-.statement 
-.whilestmt 
- 'while' '(' expr ')' body.
-
-reduce   89  whilestmt:  'while' '(' expr ')' body. {'if'} ?
-
-example   r  # identifier ; String identifier ; BEGIN while ( identifier ) identifier = string_const .if ( identifier ) then identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.statement 
-.ifstmt 
-.'if' condition 'then' body 
-
-shift    82  ifstmt: .'if' condition 'then' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = string_const END ; 
-
- ...
-.ifstmt 
-.'if' condition 'then' body 'else' body 
-
-shift    84  ifstmt: .'if' condition 'then' body 'else' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = string_const else identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .statement 
-| .whilestmt 
-| .'while' '(' expr ')' body 
-.statement 
-.whilestmt 
- 'while' '(' expr ')' body.
-
-reduce   89  whilestmt:  'while' '(' expr ')' body. {'while'} ?
-
-example   r  # identifier ; String identifier ; BEGIN while ( identifier ) identifier = string_const .while ( identifier ) identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.statement 
-.whilestmt 
-.'while' '(' expr ')' body 
-
-shift    89  whilestmt: .'while' '(' expr ')' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .while ( identifier ) identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .statement 
-| .forstmt 
-| .'for' '(' int_const ')' body 
-.statement 
-.whilestmt 
- 'while' '(' expr ')' body.
-
-reduce   89  whilestmt:  'while' '(' expr ')' body. {'for'} ?
-
-example   r  # identifier ; String identifier ; BEGIN while ( identifier ) identifier = string_const .for ( int_const ) identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.statement 
-.forstmt 
-.'for' '(' int_const ')' body 
-
-shift    94  forstmt: .'for' '(' int_const ')' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .for ( int_const ) identifier = string_const END ; 
-
-State   50 (  71): summary
---------------------------
-
-ignore reduce   89  whilestmt:  'while' '(' expr ')' body. {identifier}
-retain shift    29  name: .identifier 
-
-ignore reduce   89  whilestmt:  'while' '(' expr ')' body. {'if'}
-retain shift    82  ifstmt: .'if' condition 'then' body 
-retain shift    84  ifstmt: .'if' condition 'then' body 'else' body 
-
-ignore reduce   89  whilestmt:  'while' '(' expr ')' body. {'while'}
-retain shift    89  whilestmt: .'while' '(' expr ')' body 
-
-ignore reduce   89  whilestmt:  'while' '(' expr ')' body. {'for'}
-retain shift    94  forstmt: .'for' '(' int_const ')' body 
-
-State   51 (  72): derivation trees
------------------------------------
-
-	shift reduce conflict implicitly repaired
-
-.root _EOF_ 
-.x 
- '#' name ';' var.exec 
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .varallocation 
-| .name '=' exprstring 
-| .identifier 
-.statement 
-.forstmt 
- 'for' '(' int_const ')' body.
-
-reduce   94  forstmt:  'for' '(' int_const ')' body. {identifier} ?
-
-example   r  # identifier ; String identifier ; BEGIN for ( int_const ) identifier = string_const .identifier = string_const END ; 
-
-.root _EOF_ 
-.x 
- '#'.name ';' var exec 
-.identifier 
-
-shift    29  name: .identifier ?
-
-example   s  # .identifier ; String identifier ; 
-
-.root _EOF_ 
-.x 
- '#' name ';' var.exec 
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .statement 
-| .ifstmt 
-| .'if' condition 'then' body 
-.statement 
-.forstmt 
- 'for' '(' int_const ')' body.
-
-reduce   94  forstmt:  'for' '(' int_const ')' body. {'if'} ?
-
-example   r  # identifier ; String identifier ; BEGIN for ( int_const ) identifier = string_const .if ( identifier ) then identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.statement 
-.ifstmt 
-.'if' condition 'then' body 
-
-shift    82  ifstmt: .'if' condition 'then' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = string_const END ; 
-
- ...
-.ifstmt 
-.'if' condition 'then' body 'else' body 
-
-shift    84  ifstmt: .'if' condition 'then' body 'else' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = string_const else identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .statement 
-| .whilestmt 
-| .'while' '(' expr ')' body 
-.statement 
-.forstmt 
- 'for' '(' int_const ')' body.
-
-reduce   94  forstmt:  'for' '(' int_const ')' body. {'while'} ?
-
-example   r  # identifier ; String identifier ; BEGIN for ( int_const ) identifier = string_const .while ( identifier ) identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.statement 
-.whilestmt 
-.'while' '(' expr ')' body 
-
-shift    89  whilestmt: .'while' '(' expr ')' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .while ( identifier ) identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .statement 
-| .forstmt 
-| .'for' '(' int_const ')' body 
-.statement 
-.forstmt 
- 'for' '(' int_const ')' body.
-
-reduce   94  forstmt:  'for' '(' int_const ')' body. {'for'} ?
-
-example   r  # identifier ; String identifier ; BEGIN for ( int_const ) identifier = string_const .for ( int_const ) identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.statement 
-.forstmt 
-.'for' '(' int_const ')' body 
-
-shift    94  forstmt: .'for' '(' int_const ')' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .for ( int_const ) identifier = string_const END ; 
-
-State   51 (  72): summary
---------------------------
-
-ignore reduce   94  forstmt:  'for' '(' int_const ')' body. {identifier}
-retain shift    29  name: .identifier 
-
-ignore reduce   94  forstmt:  'for' '(' int_const ')' body. {'if'}
-retain shift    82  ifstmt: .'if' condition 'then' body 
-retain shift    84  ifstmt: .'if' condition 'then' body 'else' body 
-
-ignore reduce   94  forstmt:  'for' '(' int_const ')' body. {'while'}
-retain shift    89  whilestmt: .'while' '(' expr ')' body 
-
-ignore reduce   94  forstmt:  'for' '(' int_const ')' body. {'for'}
-retain shift    94  forstmt: .'for' '(' int_const ')' body 
-
-State   52 (  74): derivation trees
------------------------------------
-
-	shift reduce conflict implicitly repaired
-
-.root _EOF_ 
-.x 
- '#' name ';' var.exec 
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .varallocation 
-| .name '=' exprstring 
-| .identifier 
-.statement 
-.ifstmt 
- 'if' condition 'then' body 'else' body.
-
-reduce   84  ifstmt:  'if' condition 'then' body 'else' body. {identifier} ?
-
-example   r  # identifier ; String identifier ; BEGIN if ( identifier ) then identifier = string_const else identifier = string_const .identifier = string_const END ; 
-
-.root _EOF_ 
-.x 
- '#'.name ';' var exec 
-.identifier 
-
-shift    29  name: .identifier ?
-
-example   s  # .identifier ; String identifier ; 
-
-.root _EOF_ 
-.x 
- '#' name ';' var.exec 
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .statement 
-| .ifstmt 
-| .'if' condition 'then' body 
-.statement 
-.ifstmt 
- 'if' condition 'then' body 'else' body.
-
-reduce   84  ifstmt:  'if' condition 'then' body 'else' body. {'if'} ?
-
-example   r  # identifier ; String identifier ; BEGIN if ( identifier ) then identifier = string_const else identifier = string_const .if ( identifier ) then identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.statement 
-.ifstmt 
-.'if' condition 'then' body 
-
-shift    82  ifstmt: .'if' condition 'then' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = string_const END ; 
-
- ...
-.ifstmt 
-.'if' condition 'then' body 'else' body 
-
-shift    84  ifstmt: .'if' condition 'then' body 'else' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .if ( identifier ) then identifier = string_const else identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .statement 
-| .whilestmt 
-| .'while' '(' expr ')' body 
-.statement 
-.ifstmt 
- 'if' condition 'then' body 'else' body.
-
-reduce   84  ifstmt:  'if' condition 'then' body 'else' body. {'while'} ?
-
-example   r  # identifier ; String identifier ; BEGIN if ( identifier ) then identifier = string_const else identifier = string_const .while ( identifier ) identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.statement 
-.whilestmt 
-.'while' '(' expr ')' body 
-
-shift    89  whilestmt: .'while' '(' expr ')' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .while ( identifier ) identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.body body 
-|  body.body 
-| .statement 
-| .forstmt 
-| .'for' '(' int_const ')' body 
-.statement 
-.ifstmt 
- 'if' condition 'then' body 'else' body.
-
-reduce   84  ifstmt:  'if' condition 'then' body 'else' body. {'for'} ?
-
-example   r  # identifier ; String identifier ; BEGIN if ( identifier ) then identifier = string_const else identifier = string_const .for ( int_const ) identifier = string_const END ; 
-
- ...
- 'BEGIN'.body 'END' ';' 
-.statement 
-.forstmt 
-.'for' '(' int_const ')' body 
-
-shift    94  forstmt: .'for' '(' int_const ')' body ?
-
-example   s  # identifier ; String identifier ; BEGIN .for ( int_const ) identifier = string_const END ; 
-
-State   52 (  74): summary
---------------------------
-
-ignore reduce   84  ifstmt:  'if' condition 'then' body 'else' body. {identifier}
-retain shift    29  name: .identifier 
-
-ignore reduce   84  ifstmt:  'if' condition 'then' body 'else' body. {'if'}
-retain shift    82  ifstmt: .'if' condition 'then' body 
-retain shift    84  ifstmt: .'if' condition 'then' body 'else' body 
-
-ignore reduce   84  ifstmt:  'if' condition 'then' body 'else' body. {'while'}
-retain shift    89  whilestmt: .'while' '(' expr ')' body 
-
-ignore reduce   84  ifstmt:  'if' condition 'then' body 'else' body. {'for'}
-retain shift    94  forstmt: .'for' '(' int_const ')' body 
 
