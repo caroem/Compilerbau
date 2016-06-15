@@ -3,6 +3,6 @@ int b;
 float x;
 String ab;
 BEGIN
-if(str == "a") then
-a=b;
+if(str == "a") then 
+a=b; 
 END;

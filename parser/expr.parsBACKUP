@@ -14,8 +14,7 @@ GLOBAL {
 }
 
 
-PREC LEFT '<' '>' '=='
-     LEFT  '+' '-'
+PREC LEFT  '+' '-'
      LEFT  '*' '/'
 
 RULE
@@ -57,18 +56,22 @@ exec	= <
 body 	= <
 	= varallocation
 	.
+	= statement 
+	.
 	= varallocation body
 	.
 	= statement body
 	.
-	= ifstmt
-	.
-	= whilestmt
-	.
-	= forstmt
-	.
 >.
 
+statement = <
+	  = ifstmt
+	  .
+	  = whilestmt
+	  .
+	  = forstmt
+	  .
+>.
 
 varallocation = <
 	 = name '='expr ';'
@@ -76,14 +79,14 @@ varallocation = <
 >.
 
 ifstmt = <
-	  = 'if' condition 'then' body
+	  = 'if' expr 'then' body
 	  .
-	  = 'if' condition 'then' body 'else' body
+	  = 'if' expr 'then' body 'else' body
 	  .
 >.
 
 whilestmt = <
-	  = 'while' condition body
+	  = 'while' expr body
 	  .
   >.
 
@@ -91,13 +94,7 @@ forstmt = <
 	  = 'for' '(' int_const ')' body
 	  .
 >.
-
-condition = <
-	  = '(' expr ')'
-	  .
->.
 	  
-
 expr = <
     = l:expr '+' r:expr
     .
@@ -118,13 +115,23 @@ expr = <
     = int_const
     .
     = float_const
+   
     .
     = identifier
     .
-    = string_const
+    = exprstring
     .
  > .
  
+ exprstring = <
+    = identfier
+    .
+    = string_const
+    .
+    = exprstring '+' exprstring
+    .
+    
+ >.
 
 
 /* Tokens */
